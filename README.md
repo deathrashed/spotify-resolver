@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🎵 Spotify Album Resolver
+# Spotify Resolver
 
 <img src="assets/spotify-resolver.png" alt="Spotify Album Resolver" width="256" height="256">
 
