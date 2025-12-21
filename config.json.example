@@ -1,0 +1,12 @@
+{
+  "timeout": 10,
+  "max_retries": 3,
+  "retry_delay": 1,
+  "default_market": "US",
+  "log_level": "INFO",
+  "cache_results": true,
+  "cache_file": "~/.config/spotify-resolver/cache.json",
+  "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
+  "client_id": "YOUR_SPOTIFY_CLIENT_ID_HERE",
+  "client_secret": "YOUR_SPOTIFY_CLIENT_SECRET_HERE"
+}

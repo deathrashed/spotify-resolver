@@ -1,0 +1,244 @@
+# Spotify Resolver - Git Ignore Configuration
+
+# ============================================
+# Python
+# ============================================
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+# Virtual environments
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+.venv/
+
+# ============================================
+# IDE / Editors
+# ============================================
+# VS Code
+.vscode/
+*.code-workspace
+
+# PyCharm
+.idea/
+*.iml
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+*~
+.*.swp
+.*.swo
+
+# Emacs
+*~
+\#*\#
+.\#*
+
+# ============================================
+# Operating System
+# ============================================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# Linux
+*~
+.directory
+.Trash-*
+
+# ============================================
+# Project Specific
+# ============================================
+# Logs
+*.log
+logs/
+*.log.*
+
+# Configuration (keep template, ignore actual config)
+config.json
+!config.json.example
+
+# Cache files
+cache.json
+*.cache
+.cache/
+
+# Credentials (NEVER commit these)
+.env
+.env.local
+.env.*.local
+secrets.json
+credentials.json
+*.pem
+*.key
+client_secrets.json
+
+# Backup files
+*.bak
+*.backup
+*.old
+*.orig
+*~
+backups/*.md
+backups/*.py
+backups/*.sh
+backups/*.json
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+
+# Testing output
+test-results/
+test-output/
+*.test
+
+# ============================================
+# Documentation Build Artifacts
+# ============================================
+docs/_build/
+docs/.doctrees/
+site/
+
+# ============================================
+# Package Managers
+# ============================================
+# pip
+pip-log.txt
+pip-delete-this-directory.txt
+
+# pipenv
+Pipfile.lock
+
+# poetry
+poetry.lock
+
+# ============================================
+# Git
+# ============================================
+*.orig
+*.rej
+.git-rewrite/
+
+# ============================================
+# Security
+# ============================================
+# API keys and tokens
+*_token.txt
+*_secret.txt
+api_keys.txt
+.spotify_credentials
+
+# SSH keys
+id_rsa
+id_rsa.pub
+*.pem
+
+# ============================================
+# Other
+# ============================================
+# Compiled files
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.so
+
+# Compressed files (unless part of release)
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+docs-archive/
+
+# IDE and tooling
+.specstory/
+.cursorindexingignore
+Icon?

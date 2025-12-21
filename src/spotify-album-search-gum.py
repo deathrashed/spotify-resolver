@@ -1,0 +1,392 @@
+#!/usr/bin/env python3
+"""Interactive album search with beautiful Gum UI: search → pick album(s) → copy."""
+from __future__ import annotations
+
+import logging
+import subprocess
+import sys
+from pathlib import Path
+from typing import Optional
+
+import pyperclip
+import requests
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+from spotify_resolver_utils import (
+    create_session,
+    get_spotify_token,
+    load_config,
+    SPOTIFY_SEARCH_URL,
+)
+
+
+def gum_available() -> bool:
+    """Check if gum is installed."""
+    try:
+        result = subprocess.run(["gum", "--version"], capture_output=True, check=True, shell=False)
+        return result.returncode == 0
+    except (subprocess.CalledProcessError, FileNotFoundError, OSError):
+        import shutil
+        gum_path = shutil.which("gum")
+        if gum_path:
+            try:
+                subprocess.run([gum_path, "--version"], capture_output=True, check=True)
+                return True
+            except (subprocess.CalledProcessError, FileNotFoundError, OSError):
+                pass
+        return False
+
+
+def gum_input(prompt: str, placeholder: str = "") -> Optional[str]:
+    """Get user input using gum. Returns the user's input."""
+    cmd = ["gum", "input", "--prompt", prompt]
+    if placeholder:
+        cmd.extend(["--placeholder", placeholder])
+
+    # Add styling to the prompt
+    cmd.extend([
+        "--prompt.foreground", "212",
+        "--placeholder.foreground", "240",
+        "--cursor.foreground", "212"
+    ])
+
+    # Gum input outputs to stdout - we need to capture it but allow TTY access
+    # The trick: don't capture stderr, keep stdin connected, capture stdout for result
+    try:
+        process = subprocess.Popen(
+            cmd,
+            stdin=sys.stdin,
+            stdout=subprocess.PIPE,
+            stderr=sys.stderr,  # Let stderr go to terminal for any UI messages
+            text=True
+        )
+        stdout, _ = process.communicate()
+        if process.returncode == 0:
+            return stdout.strip()
+    except Exception:
+        pass
+    return None
+
+
+def gum_choose(items: list[str], header: str = "") -> Optional[str]:
+    """Let user choose from a list using gum. Returns the selected item."""
+    if not items:
+        return None
+
+    cmd = ["gum", "choose"]
+    if header:
+        cmd.extend(["--header", header])
+
+    # Add beautiful styling to the choose menu
+    cmd.extend([
+        "--header.foreground", "212",
+        "--cursor.foreground", "212",
+        "--selected.foreground", "48",
+        "--item.foreground", "7",
+        "--cursor", "▶ ",
+        "--selected-prefix", "✓ ",
+        "--unselected-prefix", "  ",
+        "--height", "15"
+    ])
+
+    cmd.extend(items)
+
+    # Gum choose displays UI and outputs selection to stdout
+    # We need TTY access but also need to capture the output
+    # Keep stdin connected, let stderr go to terminal for UI, capture stdout for result
+    try:
+        process = subprocess.Popen(
+            cmd,
+            stdin=sys.stdin,
+            stdout=subprocess.PIPE,
+            stderr=sys.stderr,  # Allow UI to display on stderr
+            text=True
+        )
+        stdout, _ = process.communicate()
+        if process.returncode == 0:
+            selected = stdout.strip()
+            return selected if selected else None
+    except Exception as e:
+        # If Gum can't access TTY, fall back gracefully
+        logging.debug(f"Gum choose failed: {e}")
+    return None
+
+
+def gum_style(text: str, **kwargs) -> None:
+    """Style text using gum and print it directly."""
+    cmd = ["gum", "style"]
+
+    # Add style flags based on kwargs
+    if kwargs.get("bold"):
+        cmd.append("--bold")
+    if kwargs.get("faint"):
+        cmd.append("--faint")
+    if kwargs.get("italic"):
+        cmd.append("--italic")
+    if kwargs.get("underline"):
+        cmd.append("--underline")
+    if kwargs.get("strikethrough"):
+        cmd.append("--strikethrough")
+
+    color = kwargs.get("foreground") or kwargs.get("color")
+    if color:
+        cmd.extend(["--foreground", color])
+
+    bg = kwargs.get("background")
+    if bg:
+        cmd.extend(["--background", bg])
+
+    # Border styling
+    border = kwargs.get("border")
+    if border:
+        cmd.extend(["--border", border])
+        border_fg = kwargs.get("border_foreground")
+        if border_fg:
+            cmd.extend(["--border-foreground", border_fg])
+        border_bg = kwargs.get("border_background")
+        if border_bg:
+            cmd.extend(["--border-background", border_bg])
+
+    # Padding and margin
+    padding = kwargs.get("padding")
+    if padding:
+        cmd.extend(["--padding", padding])
+
+    margin = kwargs.get("margin")
+    if margin:
+        cmd.extend(["--margin", margin])
+
+    # Alignment
+    align = kwargs.get("align")
+    if align:
+        cmd.extend(["--align", align])
+
+    # Width
+    width = kwargs.get("width")
+    if width:
+        cmd.extend(["--width", str(width)])
+
+    # Add the text to style as arguments
+    cmd.append(text)
+
+    # Run and print the styled output
+    try:
+        result = subprocess.run(cmd, capture_output=True, text=True)
+        if result.returncode == 0:
+            print(result.stdout, end="")
+        else:
+            print(text, end="")
+    except Exception:
+        print(text, end="")
+
+
+def search_albums(query: str, session: requests.Session, token: str, limit: int = 20) -> list[dict]:
+    """Search for albums matching the query."""
+    headers = {"Authorization": f"Bearer {token}"}
+    params = {"q": query, "type": "album", "limit": limit}
+    response = session.get(SPOTIFY_SEARCH_URL, params=params, headers=headers, timeout=10)
+    response.raise_for_status()
+    return response.json().get("albums", {}).get("items", [])
+
+
+def format_album_choice(album: dict) -> str:
+    """Format album for display in gum choose."""
+    name = album.get("name", "?")
+    artists = ", ".join(artist.get("name", "?") for artist in album.get("artists", []))
+    return f"{name} — {artists}"
+
+
+def main() -> None:
+    """Interactive workflow with Gum UI: search albums → pick album(s) → copy."""
+    use_gum = gum_available()
+
+    if not use_gum:
+        print("⚠️  Gum is not installed. Install with: brew install gum")
+        print("Falling back to basic input...\n")
+
+    # Step 1: Get search query
+    if len(sys.argv) > 1:
+        query = " ".join(sys.argv[1:])
+    else:
+        if use_gum:
+            # Style the header with a nice border
+            gum_style("Spotify Album Resolver",
+                     foreground="212",
+                     bold=True,
+                     border="rounded",
+                     border_foreground="212",
+                     padding="1 3",
+                     margin="1 0",
+                     align="center")
+            print()
+            query = gum_input("🔍 Search for albums: ", "artist, album, keywords...")
+            if not query:
+                # Fallback to regular input if gum fails
+                query = input("Search for albums (artist, album, keywords): ").strip()
+        else:
+            print("Spotify Album Resolver\n")
+            query = input("Search for albums (artist, album, keywords): ").strip()
+
+        if not query:
+            print("Query required")
+            raise SystemExit(1)
+
+    # Load config and get token
+    config = load_config()
+    client_id = config.get("client_id")
+    client_secret = config.get("client_secret")
+    if not client_id or not client_secret:
+        logging.error("Missing Spotify credentials")
+        raise SystemExit(1)
+
+    session = create_session(config)
+    token = get_spotify_token(session, client_id, client_secret)
+    if not token:
+        raise SystemExit(1)
+
+    # Step 2: Search for albums
+    if use_gum:
+        gum_style("🔍 Searching Spotify...",
+                 foreground="212",
+                 faint=True,
+                 italic=True,
+                 padding="0 2")
+        print()
+    else:
+        print(f"Searching for albums: {query}...")
+
+    albums = search_albums(query, session, token, 20)
+
+    if not albums:
+        if use_gum:
+            gum_style("❌ No albums found",
+                     foreground="196",
+                     bold=True,
+                     border="rounded",
+                     border_foreground="196",
+                     padding="1 2",
+                     margin="1 0")
+            print()
+        else:
+            print("No albums found.")
+        raise SystemExit(0)
+
+    # Step 3: Format albums for selection
+    album_choices = [format_album_choice(album) for album in albums]
+    album_choices.append("🎵 ALL albums (copy all URLs)")
+
+    if use_gum:
+        # Use gum choose with beautiful styling
+        gum_style(f"✨ Found {len(albums)} album(s)",
+                 foreground="48",
+                 bold=True,
+                 padding="0 2",
+                 margin="1 0")
+        print()
+        header_text = f"🎵 Select an album ({len(albums)} found):"
+        selected_choice = gum_choose(album_choices, header=header_text)
+
+        if not selected_choice:
+            # Fallback if gum choose fails or user cancels
+            print(f"\nFound {len(albums)} album(s). Select one:")
+            for idx, choice in enumerate(album_choices, start=1):
+                print(f"{idx}. {choice}")
+            try:
+                choice_input = input("\nChoose a number (blank = first): ").strip()
+                selected_idx = int(choice_input) - 1 if choice_input else 0
+                if 0 <= selected_idx < len(album_choices):
+                    selected_choice = album_choices[selected_idx]
+                else:
+                    selected_choice = None
+            except (ValueError, KeyboardInterrupt):
+                selected_choice = None
+    else:
+        # Fallback to basic input
+        print(f"\nFound {len(albums)} album(s). Select one:")
+        for idx, choice in enumerate(album_choices, start=1):
+            print(f"{idx}. {choice}")
+        try:
+            choice_input = input("\nChoose a number (blank = first): ").strip()
+            selected_idx = int(choice_input) - 1 if choice_input else 0
+            if 0 <= selected_idx < len(album_choices):
+                selected_choice = album_choices[selected_idx]
+            else:
+                selected_choice = None
+        except (ValueError, KeyboardInterrupt):
+            selected_choice = None
+
+    if not selected_choice:
+        raise SystemExit(1)
+
+    # Handle selection
+    if selected_choice == "🎵 ALL albums (copy all URLs)":
+        # Copy all album URLs
+        urls = [album.get("external_urls", {}).get("spotify") for album in albums if album.get("external_urls", {}).get("spotify")]
+        urls_text = "\n".join(urls)
+        pyperclip.copy(urls_text)
+        if use_gum:
+            gum_style(f"✅ Copied {len(urls)} album URLs to clipboard!",
+                     foreground="48",
+                     bold=True,
+                     border="rounded",
+                     border_foreground="48",
+                     padding="1 3",
+                     margin="1 0")
+            print()
+        else:
+            print(f"\n✅ Copied {len(urls)} album URLs to clipboard!")
+    else:
+        # Find selected album
+        selected_album = None
+        for album in albums:
+            if format_album_choice(album) == selected_choice:
+                selected_album = album
+                break
+
+        if not selected_album:
+            print("Error: Album not found")
+            raise SystemExit(1)
+
+        # Copy single album URL
+        url = selected_album.get("external_urls", {}).get("spotify")
+        if url:
+            pyperclip.copy(url)
+            album_name = selected_album.get("name", "Unknown")
+            artists = ", ".join(artist.get("name", "?") for artist in selected_album.get("artists", []))
+
+            if use_gum:
+                gum_style("✅ Copied to clipboard!",
+                         foreground="48",
+                         bold=True,
+                         border="rounded",
+                         border_foreground="48",
+                         padding="1 3",
+                         margin="1 0",
+                         align="center")
+                print()
+                gum_style(f"📀 {album_name}",
+                         foreground="212",
+                         bold=True,
+                         padding="0 2")
+                print()
+                gum_style(f"   👤 {artists}",
+                         foreground="99",
+                         faint=True,
+                         padding="0 2")
+                print()
+                gum_style(f"🔗 {url}",
+                         foreground="33",
+                         italic=True,
+                         padding="0 2",
+                         margin="0 0 1 0")
+                print()
+            else:
+                print(f"\n✅ Copied to clipboard: {album_name} — {artists}")
+                print(f"   {url}")
+        else:
+            print("No URL available")
+
+
+if __name__ == "__main__":
+    main()
