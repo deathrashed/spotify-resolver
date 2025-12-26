@@ -170,4 +170,4 @@ Complete production-ready Spotify album link resolver with comprehensive documen
 
 ---
 
-[1.0.0]: https://github.com/your-repo/spotify-resolver/releases/tag/v1.0.0
+[1.0.0]: https://github.com/deathrashed/spotify-resolver/releases/tag/v1.0.0

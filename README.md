@@ -602,9 +602,8 @@ spotify-resolver/
 ## 📚 Documentation
 
 - **README.md** - This file (complete documentation)
-- **docs/CHANGELOG.md** - Version history and release notes
-- **docs/CONTRIBUTING.md** - Contributor guide
-- **docs/GIT-SETUP.md** - Git initialization guide
+- **CHANGELOG.md** - Version history and release notes
+- **CONTRIBUTING.md** - Contributor guide
 
 ---
 

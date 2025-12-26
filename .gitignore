@@ -239,6 +239,6 @@ id_rsa.pub
 docs-archive/
 
 # IDE and tooling
-.specstory/
+/.specstory
 .cursorindexingignore
 Icon?
