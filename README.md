@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🎵 Spotify Album Resolver
+# Spotify Album Resolver
 
 <img src="assets/spotify-resolver.png" alt="Spotify Album Resolver" width="256" height="256">
 
@@ -10,29 +10,29 @@
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![macOS](https://img.shields.io/badge/platform-macOS-lightgrey.svg)](https://www.apple.com/macos/)
 
-[Features](#-features) • [Installation](#-installation) • [Usage](#-usage) • [Integration](#-integration) • [Documentation](#-documentation)
+[Features](#features) • [Installation](#installation) • [Usage](#usage) • [Integration](#integration) • [Documentation](#documentation)
 
 </div>
 
 ---
 
-## 🎯 Overview
+## Overview
 
 **Spotify Album Resolver** is a production-ready command-line tool that searches Spotify for albums and copies their URLs to your clipboard. Perfect for integration with download managers, music cataloging systems, or any workflow that needs quick access to Spotify album links.
 
-## ✨ Features
+## Features
 
-- 🔍 **Multiple Search Methods** - Command-line flags, interactive prompts, piped input, or direct queries
-- 📋 **Smart Clipboard** - Automatic clipboard integration with macOS fallback support
-- 🔄 **Robust Error Handling** - Automatic retries, timeout handling, and comprehensive logging
-- ⚙️ **Fully Configurable** - JSON configuration with sensible defaults
-- 🎨 **Clean Output** - No GUI windows, just clean terminal output with emoji indicators
-- 🔌 **Integration Ready** - Works with Keyboard Maestro, Raycast, Alfred, AppleScript, and shell scripts
-- 🧪 **Well Tested** - Comprehensive test suite included
+• **Multiple Search Methods** - Command-line flags, interactive prompts, piped input, or direct queries
+• **Smart Clipboard** - Automatic clipboard integration with macOS fallback support
+• **Robust Error Handling** - Automatic retries, timeout handling, and comprehensive logging
+• **Fully Configurable** - JSON configuration with sensible defaults
+• **Clean Output** - No GUI windows, just clean terminal output
+• **Integration Ready** - Works with Keyboard Maestro, Raycast, Alfred, AppleScript, and shell scripts
+• **Well Tested** - Comprehensive test suite included
 
 ---
 
-## 📦 Installation
+## Installation
 
 ### Quick Install (Recommended)
 
@@ -50,11 +50,11 @@ cd ~/spotify-resolver
 **Note:** The scripts work from any installation location. If you place it in a different path, update the paths in documentation examples accordingly.
 
 The installer will:
-- ✅ Check and install required Python packages
-- ✅ Create necessary directories
-- ✅ Set up configuration files
-- ✅ Configure logging
-- ✅ Verify the installation
+• Check and install required Python packages
+• Create necessary directories
+• Set up configuration files
+• Configure logging
+• Verify the installation
 
 ### Manual Installation
 
@@ -92,7 +92,7 @@ A template is available at `config.json.example` in the project root.
 
 ---
 
-## 🚀 Usage
+## Usage
 
 ### Basic Commands
 
@@ -137,9 +137,9 @@ spotify-album-picker.py
 spotify-album-picker.py Metallica Master
 ```
 
-#### Beautiful UI with Gum 🎨
+#### Beautiful UI with Gum
 
-For a visually stunning experience, use the Gum-powered versions:
+For a visually enhanced experience, use the Gum-powered versions:
 
 ```bash
 # Beautiful album search with interactive UI
@@ -150,10 +150,10 @@ python3 src/spotify-artist-search-gum.py "The Beatles"
 ```
 
 **Features:**
-- ✨ Beautiful styled prompts and selections
-- 🎨 Color-coded status messages
-- 📋 Interactive menus with Gum's elegant UI
-- 🚀 Same functionality, better visuals
+• Beautiful styled prompts and selections
+• Color-coded status messages
+• Interactive menus with Gum's elegant UI
+• Same functionality, better visuals
 
 **Install Gum:**
 ```bash
@@ -205,7 +205,7 @@ Perfect for exploring an artist's complete discography!
 
 ---
 
-## ⊕ Integration
+## Integration
 
 <details>
 <summary><b>AppleScript Integration</b></summary>
@@ -225,10 +225,10 @@ osascript /path/to/spotify-resolver/scripts/spotify-album-resolver.applescript
 ```
 
 **Features:**
-- ⚡ Fast - gets top result immediately
-- ◎ Clean output - no warnings or debug info
-- ⊙ Simple dialog showing artist, album, and URL
-- ▣ Automatically copies to clipboard
+• Fast - gets top result immediately
+• Clean output - no warnings or debug info
+• Simple dialog showing artist, album, and URL
+• Automatically copies to clipboard
 
 **Best for:** When you know exactly what you're searching for
 
@@ -245,11 +245,11 @@ osascript /path/to/spotify-resolver/scripts/spotify-album-selector.applescript
 ```
 
 **Features:**
-- ▦ Shows all search results (up to 20 albums)
-- ▣ Choose from list dialog
-- ◎ Clean formatting: "Artist - Album"
-- ⊙ Only copies after you select
-- ⊕ Perfect for browsing multiple matches
+• Shows all search results (up to 20 albums)
+• Choose from list dialog
+• Clean formatting: "Artist - Album"
+• Only copies after you select
+• Perfect for browsing multiple matches
 
 **Best for:** When you want to browse and choose from multiple results
 
@@ -363,7 +363,6 @@ do shell script "osascript /path/to/spotify-resolver/scripts/spotify-album-selec
    - **Name:** Spotify Album Resolver
    - **Filename:** `spotify-album-resolver`
    - **Description:** Resolve Spotify album link
-   - **Icon:** 🎵
    - **Script:**
      ```bash
      #!/bin/bash
@@ -372,7 +371,6 @@ do shell script "osascript /path/to/spotify-resolver/scripts/spotify-album-selec
      # @raycast.schemaVersion 1
      # @raycast.title Spotify Album Resolver
      # @raycast.mode silent
-     # @raycast.icon 🎵
 
      # Optional parameters:
      # @raycast.argument1 { "type": "text", "placeholder": "Band - Album" }
@@ -393,7 +391,6 @@ do shell script "osascript /path/to/spotify-resolver/scripts/spotify-album-selec
 # @raycast.schemaVersion 1
 # @raycast.title Spotify Album Resolver
 # @raycast.mode silent
-# @raycast.icon 🎵
 
 # Optional parameters:
 # @raycast.argument1 { "type": "text", "placeholder": "Band Name" }
@@ -473,7 +470,7 @@ splink
 
 ---
 
-## ⚙️ Configuration
+## Configuration
 
 ### Configuration File
 
@@ -509,7 +506,7 @@ Location: `~/.config/spotify-resolver/config.json`
 
 ---
 
-## 🧪 Testing
+## Testing
 
 Run the comprehensive test suite:
 
@@ -518,15 +515,15 @@ Run the comprehensive test suite:
 ```
 
 The test suite validates:
-- ✅ Basic search functionality
-- ✅ Multiple input methods
-- ✅ Error handling
-- ✅ Configuration loading
-- ✅ Clipboard integration
+• Basic search functionality
+• Multiple input methods
+• Error handling
+• Configuration loading
+• Clipboard integration
 
 ---
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Common Issues
 
@@ -565,7 +562,7 @@ tail -f ~/.local/log/spotify-resolver/spotify-resolver.log
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 spotify-resolver/
@@ -585,10 +582,6 @@ spotify-resolver/
 │   ├── spotify-album-selector.applescript # Album selector (AppleScript)
 │   ├── spotify-album-interactive-selector.applescript # Interactive album selector (AppleScript)
 │   └── spotify-artist-album-selector.applescript # Artist → Album selector (AppleScript)
-├── docs/                              # Documentation
-│   ├── CHANGELOG.md
-│   ├── CONTRIBUTING.md
-│   └── GIT-SETUP.md
 ├── assets/                            # Images & media
 │   └── spotify-resolver.png
 ├── config.json.example                # Configuration template
@@ -599,7 +592,7 @@ spotify-resolver/
 
 ---
 
-## 📚 Documentation
+## Documentation
 
 - **README.md** - This file (complete documentation)
 - **CHANGELOG.md** - Version history and release notes
@@ -607,7 +600,7 @@ spotify-resolver/
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 Contributions welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
@@ -626,13 +619,13 @@ pip3 install requests pyperclip
 
 ---
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see [LICENSE](LICENSE) file for details.
 
 ---
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - Built with [Spotify Web API](https://developer.spotify.com/documentation/web-api/)
 - Uses [requests](https://docs.python-requests.org/) for HTTP handling
@@ -640,24 +633,24 @@ This project is licensed under the MIT License - see [LICENSE](LICENSE) file for
 
 ---
 
-## 📈 Version History
+## Version History
 
 ### Version 1.0.0 (December 2025)
-- ✅ Initial production-ready release
-- ✅ Full Spotify Web API integration
-- ✅ Multiple input methods
-- ✅ AppleScript dialog interface
-- ✅ Comprehensive error handling
-- ✅ Keyboard Maestro, Raycast, Alfred integration
-- ✅ Complete documentation
-- ✅ Test suite
+• Initial production-ready release
+• Full Spotify Web API integration
+• Multiple input methods
+• AppleScript dialog interface
+• Comprehensive error handling
+• Keyboard Maestro, Raycast, Alfred integration
+• Complete documentation
+• Test suite
 
 ---
 
 <div align="center">
 
-**Made with ❤️ for seamless Spotify album discovery**
+**Made for seamless Spotify album discovery**
 
-[⬆ Back to Top](#-spotify-album-resolver)
+[Back to Top](#spotify-album-resolver)
 
 </div>
